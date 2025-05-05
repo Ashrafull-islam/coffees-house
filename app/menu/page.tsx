@@ -3,7 +3,7 @@ import { Search, X } from "lucide-react"
 import Link from "next/link"
 
 export const getpost = async () => {
-  const res = await fetch(`http://localhost:3000//api/product`, {
+  const res = await fetch(`http://localhost:3000/api/product`, {
     cache: 'no-store' // Optional: avoid caching
   })
   const data = await res.json()
@@ -66,7 +66,7 @@ export default async function Home() {
       <div className="relative z-10 mt-8 px-4 pb-12 max-w-9/12 mx-auto">
         <div className="grid grid-cols-3 gap-4">
           {product.map((item) => (
-            <Link href={`/menu/${item._id}`}>
+            <Link key={item._id} href={`/menu/${item._id}`}>
             <CoffeeCard
               key={item.id || item.name}
               photo={item?.photo || "/placeholder.svg"}

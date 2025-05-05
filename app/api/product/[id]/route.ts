@@ -1,6 +1,27 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectionToDatabase from "@/lib/dbConnect";
 import User from "@/modals/User";
+
+// GET /api/product/:id
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectionToDatabase();
+
+    const user = await User.findById(params.id);
+
+    if (!user) {
+      return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return NextResponse.json({ success: false, message: "Failed to fetch user" }, { status: 500 });
+  }
+}
 
 // DELETE /api/product/:id
 export async function DELETE(
@@ -23,29 +44,32 @@ export async function DELETE(
   }
 }
 
-// PUT /api/product/:id
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
     await connectionToDatabase();
 
+    const id = request.nextUrl.pathname.split('/').pop(); // or extract with regex
     const body = await request.json();
 
     const updatedUser = await User.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: body },
       { new: true, runValidators: true }
     );
 
     if (!updatedUser) {
-      return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
-    console.error("Error updating user:", error);
-    return NextResponse.json({ success: false, message: "Failed to update user" }, { status: 500 });
+    console.error('Error updating user:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to update user' },
+      { status: 500 }
+    );
   }
 }
