@@ -3,23 +3,28 @@ import connectionToDatabase from "@/lib/dbConnect";
 import User from "@/modals/User";
 
 // GET /api/product/:id
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
     await connectionToDatabase();
 
-    const user = await User.findById(params.id);
+    const id = request.nextUrl.pathname.split('/').pop(); // safely extract [id]
+
+    const user = await User.findById(id);
 
     if (!user) {
-      return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ success: true, user });
   } catch (error) {
-    console.error("Error fetching user:", error);
-    return NextResponse.json({ success: false, message: "Failed to fetch user" }, { status: 500 });
+    console.error('Error fetching user:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to fetch user' },
+      { status: 500 }
+    );
   }
 }
 
