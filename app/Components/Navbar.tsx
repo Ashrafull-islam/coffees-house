@@ -64,6 +64,7 @@ if(!pathName.includes("addminPage")){
                 <Link href="/" className="hover:text-gray-300">Home</Link>
                 <Link href="/menu" className="hover:text-gray-300">Menu</Link>
                 <Link href="/about" className="hover:text-gray-300">About Us</Link>
+                <Link href="/cart" className="hover:text-gray-300">Cart</Link>
               </div>
             </div>
 
@@ -98,6 +99,7 @@ if(!pathName.includes("addminPage")){
               <Link href="/" className="block px-3 py-2 hover:bg-white/10 rounded-md" onClick={() => setIsMenuOpen(false)}>Home</Link>
               <Link href="/menu" className="block px-3 py-2 hover:bg-white/10 rounded-md" onClick={() => setIsMenuOpen(false)}>Menu</Link>
               <Link href="/about" className="block px-3 py-2 hover:bg-white/10 rounded-md" onClick={() => setIsMenuOpen(false)}>About Us</Link>
+              <Link href="/cart" className="block px-3 py-2 hover:bg-white/10 rounded-md" onClick={() => setIsMenuOpen(false)}>Cart</Link>
               <Link href="/signin" className="block px-3 py-2 hover:bg-white/10 rounded-md" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
               <div className="px-3 py-2">
                 <div className="relative">

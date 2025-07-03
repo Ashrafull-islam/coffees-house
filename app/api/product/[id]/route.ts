@@ -1,41 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectionToDatabase from "@/lib/dbConnect";
 import User from "@/modals/User";
+import mongoose from "mongoose";
 
 // GET /api/product/:id
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     await connectionToDatabase();
 
-    const id = request.nextUrl.pathname.split('/').pop(); // safely extract [id]
+    const { id } = params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid product ID' },
+        { status: 400 }
+      );
+    }
 
     const user = await User.findById(id);
 
     if (!user) {
       return NextResponse.json(
-        { success: false, message: 'User not found' },
+        { success: false, message: 'Product not found' },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ success: true, user });
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error fetching product:', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to fetch user' },
+      { success: false, message: 'An unexpected error occurred' },
       { status: 500 }
     );
   }
 }
 
-// DELETE /api/product/:id
-
-export async function PUT(request: NextRequest) {
+// PUT /api/product/:id
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     await connectionToDatabase();
 
-    const id = request.nextUrl.pathname.split('/').pop(); // or extract with regex
+    const { id } = params;
     const body = await request.json();
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid product ID' },
+        { status: 400 }
+      );
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
@@ -45,16 +59,16 @@ export async function PUT(request: NextRequest) {
 
     if (!updatedUser) {
       return NextResponse.json(
-        { success: false, message: 'User not found' },
+        { success: false, message: 'Product not found' },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error('Error updating product:', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to update user' },
+      { success: false, message: 'Failed to update product' },
       { status: 500 }
     );
   }
