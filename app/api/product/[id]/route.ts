@@ -1,18 +1,25 @@
+// app/api/product/[id]/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import connectionToDatabase from "@/lib/dbConnect";
 import User from "@/modals/User";
 import mongoose from "mongoose";
 
-// GET /api/product/:id
+// Helper to extract ID from URL
+function getIdFromUrl(request: NextRequest) {
+  const segments = request.nextUrl.pathname.split("/");
+  return segments[segments.length - 1];
+}
+
 export async function GET(request: NextRequest) {
   try {
     await connectionToDatabase();
 
-    const id = request.nextUrl.pathname.split("/").pop() as string;
+    const id = getIdFromUrl(request);
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
-        { success: false, message: "Invalid product ID" },
+        { success: false, message: "Invalid ID" },
         { status: 400 }
       );
     }
@@ -28,34 +35,31 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, user });
   } catch (error) {
-    console.error("Error fetching product:", error);
     return NextResponse.json(
-      { success: false, message: "An unexpected error occurred" },
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }
 }
 
-// PUT /api/product/:id
 export async function PUT(request: NextRequest) {
   try {
     await connectionToDatabase();
 
-    const id = request.nextUrl.pathname.split("/").pop() as string;
+    const id = getIdFromUrl(request);
     const body = await request.json();
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
-        { success: false, message: "Invalid product ID" },
+        { success: false, message: "Invalid ID" },
         { status: 400 }
       );
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { $set: body },
-      { new: true, runValidators: true }
-    );
+    const updatedUser = await User.findByIdAndUpdate(id, body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updatedUser) {
       return NextResponse.json(
@@ -66,9 +70,8 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
-    console.error("Error updating product:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to update product" },
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }
