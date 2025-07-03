@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import Image from "next/image";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 
 const defaultCoffeeImage = "/cups/Rectangle 10.png";
 
@@ -15,17 +15,15 @@ interface Coffee {
 // Fetch product by ID
 const getData = async (id: string) => {
   try {
-    // Using a more robust fetch with a timeout
     const res = await fetch(`http://localhost:3000/api/product/${id}`, { cache: 'no-store' });
 
     if (!res.ok) {
-      // Log the status for better debugging
       console.error(`Error fetching product: ${res.status} ${res.statusText}`);
       return null;
     }
 
     const data = await res.json();
-    
+
     if (!data.success) {
       console.error(`API error: ${data.message}`);
       return null;
@@ -39,7 +37,7 @@ const getData = async (id: string) => {
 };
 
 export default function Page({ params }: { params: { id: string } }) {
-  const { id } = use(params);
+  const { id } = params; // ✅ FIXED HERE
   const [product, setProduct] = useState<any>(null);
   const [cart, setCart] = useState<Coffee[]>([]);
 
